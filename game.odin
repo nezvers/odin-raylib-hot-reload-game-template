@@ -20,6 +20,8 @@ PIXEL_WINDOW_HEIGHT :: 180
 Game_Memory :: struct {	
 	player_pos: Vec2,
 	some_number: int,
+	camera_main: rl.Camera2D,
+	camera_ui: rl.Camera2D,
 }
 
 g_mem: ^Game_Memory
@@ -60,19 +62,20 @@ update :: proc() {
 	input = linalg.normalize0(input)
 	g_mem.player_pos += input * rl.GetFrameTime() * 100
 	g_mem.some_number += 1
+	g_mem.camera_main.target = g_mem.player_pos
 }
 
 draw :: proc() {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.BLACK)
 	
-	rl.BeginMode2D(game_camera())
+	rl.BeginMode2D(g_mem.camera_main)
 	rl.DrawRectangleV(g_mem.player_pos, {10, 20}, rl.WHITE)
 	rl.DrawRectangleV({20, 20}, {10, 10}, rl.RED)
 	rl.DrawRectangleV({-30, -20}, {10, 10}, rl.GREEN)
 	rl.EndMode2D()
 
-	rl.BeginMode2D(ui_camera())
+	rl.BeginMode2D(g_mem.camera_ui)
 	rl.DrawText(fmt.ctprintf("some_number: %v\nplayer_pos: %v", g_mem.some_number, g_mem.player_pos), 5, 5, 8, rl.WHITE)
 	rl.EndMode2D()
 
@@ -81,6 +84,10 @@ draw :: proc() {
 
 @(export)
 game_update :: proc() -> bool {
+	if (rl.IsWindowResized()){
+		g_mem.camera_main = game_camera()
+		g_mem.camera_ui = ui_camera()
+	}
 	update()
 	draw()
 	return !rl.WindowShouldClose()
@@ -101,7 +108,8 @@ game_init :: proc() {
 	g_mem^ = Game_Memory {
 		some_number = 100,
 	}
-
+	g_mem.camera_main = game_camera()
+	g_mem.camera_ui = ui_camera()
 	game_hot_reloaded(g_mem)
 }
 
