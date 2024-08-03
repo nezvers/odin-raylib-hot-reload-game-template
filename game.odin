@@ -11,87 +11,10 @@
 
 package game
 
-import "core:math/linalg"
-import "core:fmt"
+import "game_state"
+import "examples"
 import rl "vendor:raylib"
 
-PIXEL_WINDOW_HEIGHT :: 180
-
-Game_Memory :: struct {	
-	player_pos: Vec2,
-	some_number: int,
-	camera_main: rl.Camera2D,
-	camera_ui: rl.Camera2D,
-}
-
-g_mem: ^Game_Memory
-
-game_camera :: proc() -> rl.Camera2D {
-	w := f32(rl.GetScreenWidth())
-	h := f32(rl.GetScreenHeight())
-
-	return {
-		zoom = h/PIXEL_WINDOW_HEIGHT,
-		target = g_mem.player_pos,
-		offset = { w/2, h/2 },
-	}
-}
-
-ui_camera :: proc() -> rl.Camera2D {
-	return {
-		zoom = f32(rl.GetScreenHeight())/PIXEL_WINDOW_HEIGHT,
-	}
-}
-
-update :: proc() {
-	input: Vec2
-
-	if rl.IsKeyDown(.UP) || rl.IsKeyDown(.W) {
-		input.y -= 1
-	}
-	if rl.IsKeyDown(.DOWN) || rl.IsKeyDown(.S) {
-		input.y += 1
-	}
-	if rl.IsKeyDown(.LEFT) || rl.IsKeyDown(.A) {
-		input.x -= 1
-	}
-	if rl.IsKeyDown(.RIGHT) || rl.IsKeyDown(.D) {
-		input.x += 1
-	}
-
-	input = linalg.normalize0(input)
-	g_mem.player_pos += input * rl.GetFrameTime() * 100
-	g_mem.some_number += 1
-	g_mem.camera_main.target = g_mem.player_pos
-}
-
-draw :: proc() {
-	rl.BeginDrawing()
-	rl.ClearBackground(rl.BLACK)
-	
-	rl.BeginMode2D(g_mem.camera_main)
-	rl.DrawRectangleV(g_mem.player_pos, {10, 20}, rl.WHITE)
-	rl.DrawRectangleV({20, 20}, {10, 10}, rl.RED)
-	rl.DrawRectangleV({-30, -20}, {10, 10}, rl.GREEN)
-	rl.EndMode2D()
-
-	rl.BeginMode2D(g_mem.camera_ui)
-	rl.DrawText(fmt.ctprintf("some_number: %v\nplayer_pos: %v", g_mem.some_number, g_mem.player_pos), 5, 5, 8, rl.WHITE)
-	rl.EndMode2D()
-
-	rl.EndDrawing()
-}
-
-@(export)
-game_update :: proc() -> bool {
-	if (rl.IsWindowResized()){
-		g_mem.camera_main = game_camera()
-		g_mem.camera_ui = ui_camera()
-	}
-	update()
-	draw()
-	return !rl.WindowShouldClose()
-}
 
 @(export)
 game_init_window :: proc() {
@@ -103,19 +26,35 @@ game_init_window :: proc() {
 
 @(export)
 game_init :: proc() {
-	g_mem = new(Game_Memory)
+	game_state.transition(examples.get_example(u64(examples.ExampleEnum.template)))
+	game_hot_reloaded(game_state.g_mem)
+}
 
-	g_mem^ = Game_Memory {
-		some_number = 100,
+@(export)
+game_update :: proc() -> bool {
+	if (rl.IsWindowResized()){
+		game_state.g_mem.game_state.window_resized()
 	}
-	g_mem.camera_main = game_camera()
-	g_mem.camera_ui = ui_camera()
-	game_hot_reloaded(g_mem)
+	if(rl.IsKeyPressed(.MINUS)){
+		// Previous Example
+		count:u64 = u64(examples.ExampleEnum.count)
+		i:u64 = (game_state.g_mem.game_state.id + count - 1) % count
+		game_state.transition(examples.get_example(i))
+	}
+	if(rl.IsKeyPressed(.EQUAL)){
+		// next example
+		count:u64 = u64(examples.ExampleEnum.count)
+		i:u64 = (game_state.g_mem.game_state.id + 1) % count
+		game_state.transition(examples.get_example(i))
+	}
+	game_state.g_mem.game_state.update()
+	game_state.g_mem.game_state.draw()
+	return !rl.WindowShouldClose()
 }
 
 @(export)
 game_shutdown :: proc() { 
-	free(g_mem)
+	game_state.clear()
 }
 
 @(export)
@@ -125,17 +64,17 @@ game_shutdown_window :: proc() {
 
 @(export)
 game_memory :: proc() -> rawptr {
-	return g_mem
+	return game_state.game_memory()
 }
 
 @(export)
 game_memory_size :: proc() -> int {
-	return size_of(Game_Memory)
+	return size_of(game_state.GameMemory)
 }
 
 @(export)
 game_hot_reloaded :: proc(mem: rawptr) {
-	g_mem = (^Game_Memory)(mem)
+	game_state.g_mem = (^game_state.GameMemory)(mem)
 }
 
 @(export)

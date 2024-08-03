@@ -1,0 +1,5 @@
+{
+    "ols.debug.engine": "vadimcn.vscode-lldb",
+    "ols.trace.server": "messages",
+    "ols.server.path": "ols"
+}
