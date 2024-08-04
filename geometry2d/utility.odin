@@ -1,9 +1,29 @@
 package geometry2d
 
-epsilon:f32 = 0.001
-pi_f64:f64 = 3.141592653589793238462643383279502884
-tau_f64:f64 = pi_f64 * 2
+import math "core:math"
 
-sign :: proc($T: typeid) -> T {
-    return (0 < T) - (T < 0)
+math :: math
+epsilon :: f32(0.001)
+pi_f64 :: f64(3.141592653589793238462643383279502884)
+pi_f32 :: f32(pi_f64)
+tau_f64 :: pi_f64 * 2
+tau_f32 :: f32(tau_f64)
+
+INFINITY:: 1e5000
+INF_F32 :: f32(INFINITY)
+INF_F64 :: f64(INFINITY)
+
+signf :: proc(v: f32) -> i32 {
+    return i32(0 < v) - i32(v < 0)
+}
+signi :: proc(v: i32) -> i32 {
+    return i32(0 < v) - i32(v < 0)
+}
+
+abs::proc(a:f32)->f32{
+    return a if a >= 0 else -a
+}
+
+clamp::proc(v:f32, lowest:f32, highest:f32)->f32{
+    return math.min(math.max(v, lowest), highest,)
 }
