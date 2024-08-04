@@ -8,13 +8,13 @@ import gm "../../geometry2d"
 
 PIXEL_WINDOW_HEIGHT :: 180
 GameState:: game_state.GameState
-Vec2:: rl.Vector2
+Vector2:: [2]f32
 s_mem: ^StateMemory
 
 
 // State data representing current scene
 StateMemory :: struct {	
-	player_pos: Vec2,
+	player_pos: Vector2,
 	some_number: f32,
 	camera_main: rl.Camera2D,
 	camera_ui: rl.Camera2D,
@@ -51,7 +51,7 @@ clear :: proc(){
 }
 
 update :: proc() {
-	input: Vec2
+	input: Vector2
 
 	if rl.IsKeyDown(.UP) || rl.IsKeyDown(.W) {
 		input.y -= 1
@@ -72,7 +72,8 @@ update :: proc() {
 
 	//mouse:rl.Vector2 = rl.GetMousePosition()
 	//line: gm.Line2D = {s_mem.player_pos, helpers.screen_to_camera(mouse, s_mem.camera_main)}
-	s_mem.some_number = gm.vec2d_dot(&{1.0, 0.0}, &{1.0, 1.0})
+	test:[4]f32 = {0.0,1.0,2.0,3.0}
+	s_mem.some_number = test.w
 }
 
 draw :: proc() {
