@@ -71,7 +71,7 @@ update :: proc() {
 	s_mem.camera_main.target = s_mem.player_pos
 
 	//mouse:rl.Vector2 = rl.GetMousePosition()
-	//line: gm.Line2D = {s_mem.player_pos, helpers.screen_to_camera(mouse, s_mem.camera_main)}
+	//line: gm.Line = {s_mem.player_pos, helpers.screen_to_camera(mouse, s_mem.camera_main)}
 	test:[4]f32 = {0.0,1.0,2.0,3.0}
 	s_mem.some_number = test.w
 }

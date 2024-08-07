@@ -31,15 +31,15 @@ clamp::proc(v:f32, lowest:f32, highest:f32)->f32{
 sqrt::math.sqrt_f32
 isnan::libc.isnan
 
-filter_duplicate_points::proc(point_list:[]Vec2D)->int{
+filter_duplicate_points::proc(point_list:[]Vec2)->int{
     point_count:int = len(point_list)
     for i in 0..<point_count {
-        a:Vec2D = point_list[i]
+        a:Vec2 = point_list[i]
         
         // compare starting from last
         pc: = point_count - 1
         for j := pc; j > i; j -= 1{
-            b:Vec2D = point_list[j]
+            b:Vec2 = point_list[j]
 
             if (abs(a.x - b.x) < epsilon && abs(a.y - b.y) < epsilon){
                 point_list[j] = point_list[point_count - 1]

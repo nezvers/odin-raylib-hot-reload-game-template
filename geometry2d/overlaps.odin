@@ -1,37 +1,37 @@
 package geometry2d
 
 // Check if point overlaps with point (analogous to contains())
-overlaps_p2p::proc(p1:Vec2D, p2:Vec2D)->bool{
-    return contains_p2p(p1, p2)
+overlaps_point_point::proc(p1:Vec2, p2:Vec2)->bool{
+    return contains_point_point(p1, p2)
 }
 
 // Checks if line segment overlaps with point
-overlaps_l2p::proc(l:Line2D, p:Vec2D)->bool{
-    return contains_l2p(l, p)
+overlaps_line_point::proc(l:Line, p:Vec2)->bool{
+    return contains_line_point(l, p)
 }
 
 // Checks if rectangle overlaps with point
-overlaps_r2p::proc(r:Rect2D, p:Vec2D)->bool{
-    return contains_r2p(r, p)
+overlaps_rectangle_point::proc(r:Rect, p:Vec2)->bool{
+    return contains_rectangle_point(r, p)
 }
 
-// Checks if circle overlaps with point
-overlaps_c2p::proc(c:Circle2D, p:Vec2D)->bool{
-    return contains_c2p(c, p)
+// Checks if Circle overlaps with point
+overlaps_circle_point::proc(c:Circle, p:Vec2)->bool{
+    return contains_circle_point(c, p)
 }
 
-// Checks if triangle overlaps with point
-overlaps_t2p::proc(t:Triangle2D, p:Vec2D)->bool{
-    return contains_t2p(t, p)
+// Checks if Triangle overlaps with point
+overlaps_triangle_point::proc(t:Triangle, p:Vec2)->bool{
+    return contains_triangle_point(t, p)
 }
 
 // Checks if point overlaps with line
-overlaps_p2l::proc(p:Vec2D, l:Line2D)->bool{
-    return contains_l2p(l, p)
+overlaps_point_line::proc(p:Vec2, l:Line)->bool{
+    return contains_line_point(l, p)
 }
 
 // Checks if line overlaps with line
-overlaps_l2l::proc(l1:Line2D, l2:Line2D)->bool{
+overlaps_line_line::proc(l1:Line, l2:Line)->bool{
     D:f32 = (l2.w - l2.y) * (l1.z - l1.x) - (l2.z - l2.x) * (l1.w - l1.y)
     uA:f32 = ((l2.z - l2.x) * (l1.y - l2.y) - (l2.w - l2.y) * (l1.x - l2.x)) / D
     uB:f32 = ((l1.z - l1.x) * (l1.y - l2.y) - (l1.w - l1.y) * (l1.x - l2.x)) / D
@@ -39,45 +39,45 @@ overlaps_l2l::proc(l1:Line2D, l2:Line2D)->bool{
 }
 
 // Checks if rectangle overlaps with line
-overlaps_r2l::proc(r:Rect2D, l:Line2D)->bool{
-    return contains_r2l(r, l) || overlaps_l2l(rect2d_top(r), l) || overlaps_l2l(rect2d_right(r), l) || overlaps_l2l(rect2d_bottom(r), l) || overlaps_l2l(rect2d_left(r), l)
+overlaps_rectangle_line::proc(r:Rect, l:Line)->bool{
+    return contains_rectangle_line(r, l) || overlaps_line_line(rect_top(r), l) || overlaps_line_line(rect_right(r), l) || overlaps_line_line(rect_bottom(r), l) || overlaps_line_line(rect_left(r), l)
 }
 
-// Checks if circle overlaps with line
-overlaps_c2l::proc(c:Circle2D, l:Line2D)->bool{
-    p:Vec2D = closest_l2p(l, c.xy)
-    return vec2d_mag2(c.xy - p) <= (c.z * c.z)
+// Checks if Circle overlaps with line
+overlaps_circle_line::proc(c:Circle, l:Line)->bool{
+    p:Vec2 = closest_line_point(l, c.xy)
+    return vec2_mag2(c.xy - p) <= (c.z * c.z)
 }
 
-// Check if triangle overlaps line segment
-overlaps_t2l::proc(t:Triangle2D, l:Line2D)->bool{
-    return overlaps_t2p(t, l.xy) || overlaps_l2l(triangle2d_side(t, 0), l) || overlaps_l2l(triangle2d_side(t, 1), l) || overlaps_l2l(triangle2d_side(t, 2), l)
+// Check if Triangle overlaps line segment
+overlaps_triangle_line::proc(t:Triangle, l:Line)->bool{
+    return overlaps_triangle_point(t, l.xy) || overlaps_line_line(triangle_side(t, 0), l) || overlaps_line_line(triangle_side(t, 1), l) || overlaps_line_line(triangle_side(t, 2), l)
 }
 
 // Checks if point overlaps with rectangle
-overlaps_p2r::proc(p:Vec2D, r:Rect2D)->bool{
-    return overlaps_r2p(r, p)
+overlaps_point_rectangle::proc(p:Vec2, r:Rect)->bool{
+    return overlaps_rectangle_point(r, p)
 }
 
 // Checks if line overlaps with rectangle
-overlaps_l2r::proc(l:Line2D, r:Rect2D)->bool{
-    return overlaps_r2l(r, l)
+overlaps_line_rectangle::proc(l:Line, r:Rect)->bool{
+    return overlaps_rectangle_line(r, l)
 }
 
 // Checks if rectangle overlaps with rectangle
-overlaps_r2r::proc(r1:Rect2D, r2:Rect2D)->bool{
-    return contains_r2r(r2, r1)
+overlaps_rectangle_rectangle::proc(r1:Rect, r2:Rect)->bool{
+    return contains_rectangle_rectangle(r2, r1)
 }
 
 
-// Check if circle overlaps rectangle
-overlaps_c2r::proc(c:Circle2D, r:Rect2D)->bool{
-    overlap:f32 = vec2d_mag2(Vec2D{clamp(c.x, r.x, r.x + r.z), clamp(c.y, r.y, r.y + r.w)} - c.xy)
+// Check if Circle overlaps rectangle
+overlaps_c2r::proc(c:Circle, r:Rect)->bool{
+    overlap:f32 = vec2_mag2(Vec2{clamp(c.x, r.x, r.x + r.z), clamp(c.y, r.y, r.y + r.w)} - c.xy)
     if isnan(overlap){overlap = 0}
     return (overlap - (c.z * c.z)) < 0
 }
 
-// Check if triangle overlaps rectangle
-overlaps_t2r::proc(t:Triangle2D, r:Rect2D)->bool{
-    return overlaps_t2l(t, rect2d_top(r)) || overlaps_t2l(t, rect2d_right(r)) || overlaps_t2l(t, rect2d_bottom(r)) || overlaps_t2l(t, rect2d_left(r)) || contains_r2p(r, t[0])
+// Check if Triangle overlaps rectangle
+overlaps_t2r::proc(t:Triangle, r:Rect)->bool{
+    return overlaps_triangle_line(t, rect_top(r)) || overlaps_triangle_line(t, rect_right(r)) || overlaps_triangle_line(t, rect_bottom(r)) || overlaps_triangle_line(t, rect_left(r)) || contains_rectangle_point(r, t[0])
 }
