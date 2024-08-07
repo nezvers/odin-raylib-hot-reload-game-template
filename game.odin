@@ -35,13 +35,13 @@ game_update :: proc() -> bool {
 	if (rl.IsWindowResized()){
 		game_state.g_mem.game_state.window_resized()
 	}
-	if(rl.IsKeyPressed(.MINUS)){
+	if(rl.IsKeyPressed(rl.KeyboardKey.MINUS)){
 		// Previous Example
 		count:u64 = u64(examples.ExampleEnum.count)
 		i:u64 = (game_state.g_mem.game_state.id + count - 1) % count
 		game_state.transition(examples.get_example(i))
 	}
-	if(rl.IsKeyPressed(.EQUAL)){
+	if(rl.IsKeyPressed(rl.KeyboardKey.EQUAL)){
 		// next example
 		count:u64 = u64(examples.ExampleEnum.count)
 		i:u64 = (game_state.g_mem.game_state.id + 1) % count

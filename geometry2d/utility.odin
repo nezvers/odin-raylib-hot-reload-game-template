@@ -1,8 +1,8 @@
 package geometry2d
 
 import math "core:math"
+import "core:c/libc"
 
-math :: math
 epsilon :: f32(0.001)
 pi_f64 :: f64(3.141592653589793238462643383279502884)
 pi_f32 :: f32(pi_f64)
@@ -26,4 +26,26 @@ abs::proc(a:f32)->f32{
 
 clamp::proc(v:f32, lowest:f32, highest:f32)->f32{
     return math.min(math.max(v, lowest), highest,)
+}
+
+sqrt::math.sqrt_f32
+isnan::libc.isnan
+
+filter_duplicate_points::proc(point_list:[]Vec2D)->int{
+    point_count:int = len(point_list)
+    for i in 0..<point_count {
+        a:Vec2D = point_list[i]
+        
+        // compare starting from last
+        pc: = point_count - 1
+        for j := pc; j > i; j -= 1{
+            b:Vec2D = point_list[j]
+
+            if (abs(a.x - b.x) < epsilon && abs(a.y - b.y) < epsilon){
+                point_list[j] = point_list[point_count - 1]
+                point_count -= 1
+            }
+        }
+    }
+    return point_count
 }

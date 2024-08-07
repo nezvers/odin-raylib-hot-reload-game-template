@@ -19,7 +19,7 @@ vec2d_area :: proc(a: Vec2D) -> f32{
 
 // Returns magnitude of vector
 vec2d_mag :: proc(a: Vec2D) -> f32{
-    return math.sqrt_f32(a.x * a.x + a.y + a.y)
+    return sqrt(a.x * a.x + a.y + a.y)
 }
 
 // Returns magnitude squared of vector (useful for fast comparisons)

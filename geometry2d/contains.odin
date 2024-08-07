@@ -50,8 +50,7 @@ contains_ray2p::proc(r:Ray2D, p:Vec2D)->bool{
 
     d:Vec2D = projection - op
     dist2:f32 = d.x * d.x + d.y * d.y
-    // TODO: math is failing to build
-    //distance:f32 = math.sqrt_f32(dist2)
+    distance:f32 = sqrt(dist2)
     return dist2 < epsilon
 }
 
@@ -81,3 +80,31 @@ contains_t2l::proc(t:Triangle2D, l:Line2D)->bool{
     return contains_t2p(t, l.xy) && contains_t2p(t, l.zw)
 }
 
+
+
+// Checks if point contains rectangle
+// TODO: maybe if all vertices are one point
+contains_p2r::proc(p:Vec2D, r:Rect2D)->bool{
+    return false
+}
+
+// Checks if line contains rectangle
+contains_l2r::proc(l:Line2D, r:Rect2D)->bool{
+    return false
+}
+
+// Checks if rectangle contains rectangle
+// r1 >= r2
+contains_r2r::proc(r1:Rect2D, r2:Rect2D)->bool{
+    return r1.x <= r2.x && r1.x + r1.z >= r2.x + r2.z && r1.y <= r2.y && r1.y + r1.w >= r2.y + r2.w
+}
+
+// Checks if circle contains rectangle
+contains_c2r::proc(c:Circle2D, r:Rect2D)->bool{
+    return contains_c2p(c, r.xy) && contains_c2p(c, r.xy + r.zw) && contains_c2p(c, {r.x + r.z, r.y}) && contains_c2p(c, {r.x, r.y + r.w})
+}
+
+// Checks if triangle contains rectangle
+contains_t2r::proc(t:Triangle2D, r:Rect2D)->bool{
+    return contains_t2p(t, r.xy) && contains_t2p(t, r.xy + r.zw) && contains_t2p(t, {r.x + r.z, r.y}) && contains_t2p(t, {r.x, r.y + r.w})
+}
